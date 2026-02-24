@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SP Icons Library</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+import React, { useState, useEffect } from 'react';
+import { 
+  Zap, Shield, Wifi, HardDrive, Monitor, Cable, Layers, 
+  ArrowLeft, Search, ChevronRight,
+  Package, ShoppingBag, LifeBuoy, Megaphone, Star, Building2,
+  Hash 
+} from 'lucide-react';
+
+// === [模式 2: 輕量化 SVG (您的聯集處理成果)] ===
+const IconTrans01 = (props) => (
+  <svg viewBox="0 0 478 478" fill="currentColor" {...props}>
+    <path d="M432.24,191.82v-8.5h-90.25c-31.46-30.02-74.07-48.46-120.98-48.46-96.79,0-175.25,78.45-175.25,175.24h16.55c0-80.58,65.32-145.9,145.9-145.9h-.01c35.91.01,68.79,12.99,94.21,34.51l-11.57,7.89h.01s-105.58,69.98-108.98,73.3c-.85.83-1.63,1.69-2.35,2.58l-.73.94c-8.39,11.3-7.58,27.34,2.56,37.73,10.14,10.4,26.15,11.61,37.66,3.51l.96-.7c.91-.7,1.8-1.46,2.64-2.29,2.7-2.63,60.7-84.84,84.58-118.73,28.84,26.65,46.91,64.8,46.91,107.17h42.16c0-20.84-3.65-40.84-10.32-59.38h29.7v-8.5h-33.01c-3.05-7.26-6.58-14.26-10.55-20.98h51.51v-8.5h-56.85c-4.95-7.39-10.45-14.39-16.43-20.93h81.93ZM212.36,300.05c-.3,5.04-4.63,8.88-9.67,8.58s-8.88-4.64-8.58-9.67c.3-5.04,4.63-8.88,9.67-8.58,5.04.3,8.88,4.63,8.58,9.67Z" />
+  </svg>
+);
+
+const IconTrans02 = (props) => (
+  <svg viewBox="0 0 478 478" fill="currentColor" {...props}>
+    <path d="M221.82,229.73c.54-23.51,19.96-31.46,34.04-31.46,19.05,0,31.71,12.95,31.71,28.5,0,13.37-8.86,19.68-14.42,22.72,19.71,6.7,20.73,22.37,20.73,27.23,0,19.31-17.12,33.9-38.24,33.9-11.93,0-25.04-4.71-31.8-14.51-4.83-6.56-5.96-14.62-6.36-19.54h22c.57,6.87,5.85,14.74,16.58,14.88,10.56,0,16.01-7.29,16.01-16.35,0-10.67-10.08-15.5-18.57-15.5h-8.77v-16.24h4.86c7.44,0,16.21-4.2,16.21-13.48,0-6.62-3.81-12.41-10.76-12.41-9.29,0-11.47,7.44-11.84,12.27h-21.38Z" />
+    <path d="M305.64,238.02c0-31.23,25.61-39.75,39.07-39.75,15.1,0,38.61,10.19,38.61,39.52v33.3c0,29.56-23.28,39.52-38.39,39.52s-39.3-9.97-39.3-39.52v-33.07ZM327.28,271.75c0,9.74,5.39,19.7,17.21,19.7s17.09-11.36,17.09-19.7v-34.47c0-6.19-2.33-19.82-17.21-19.82-12.15,0-17.09,10.36-17.09,19.88v34.41Z" />
+    <path d="M235.62,167.38h-51.53c-2.92,0-5.54,2.13-6.59,5.22l-26.92,80.01c-2.38,7.04-10.96,6.9-13.14-.06l-12.78-39.95h0v-.14l-3.27-9.82c-4-18.6,9.06-21.01,15.7-21.07,2.3,0,4.26-1.62,5.08-4l1.65-5.11c.77-2.47-.77-5.08-2.95-5.08h-39.18c-4.91,0-8.29,5.73-6.56,10.96l40.43,124.76c1.05,3.18,3.66,5.28,6.61,5.28h18.29c2.84,0,5.45-2.04,6.5-5.06l29.96-86.2,2.61-7.55c10.22-23.51,24.16-25.52,31.06-24.9,2.36.2,4.63-1.48,5.45-4.12l2.61-8.04c.82-2.44-.74-5.14-3.04-5.14" />
+  </svg>
+);
+
+// === [模式 3: 通用路徑組件] ===
+const IconPath = ({ d, viewBox = "0 0 24 24", ...props }) => (
+  <svg viewBox={viewBox} fill="currentColor" {...props}>
+    <path d={d} />
+  </svg>
+);
+
+const IconImage = ({ src, alt, ...props }) => (
+  <img src={src} alt={alt || "icon"} className="w-full h-full object-contain" {...props} />
+);
+
+// --- 資料結構：規格類 (Specs / Black) ---
+const SPECS_CATEGORIES = [
+  { id: 'specs-product-lines', title: '產品類別', icon: Package, desc: '各產品系列規格識別' },
+  { id: 'transmission', title: '傳輸速度與效能', icon: Cable, desc: '線材、接口與數據傳輸規範' },
+  { id: 'power', title: '電力與充電', icon: Zap, desc: '電池、充電與電源管理' },
+  { id: 'protection', title: '防護與耐用', icon: Shield, desc: '防水防塵 IP 等級與外殼' },
+  { id: 'interface', title: '產品介面與外觀', icon: Layers, desc: '實體按鍵與觸控交互' },
+  { id: 'device-env', title: '裝置與環境', icon: Monitor, desc: '螢幕、操作環境與周邊' },
+  { id: 'cert-tech', title: '認證與技術', icon: Wifi, desc: '各國安規認證與無線技術' },
+  { id: 'commercial', title: '商業服務與通用', icon: Building2, desc: '企業解決方案與通用標示' },
+];
+
+// --- 資料結構：品牌類 (Brand / Pink) ---
+const BRAND_CATEGORIES = [
+  { id: 'product-lines', title: '產品類別', icon: Package, desc: '各產品系列識別圖示 (Series A/B/C)' },
+  { id: 'ecommerce', title: '會員電商', icon: ShoppingBag, desc: '購物車、會員等級、優惠券、點數' },
+  { id: 'support', title: '客服支援', icon: LifeBuoy, desc: '保固圖示、維修流程、線上諮詢' },
+  { id: 'marketing', title: '行銷活動', icon: Megaphone, desc: '促銷標籤 (Sale)、活動 Banner 元素' },
+  { id: 'features', title: '品牌特色', icon: Star, desc: '獨家技術、核心價值 (Core Values)' },
+  { id: 'corporate', title: '企業形象', icon: Building2, desc: 'Logo 規範、辦公室指引、名片元素' },
+];
+
+// --- [資料設定區] ---
+const ITEMS_DATA = {
+  // === 規格類資料 (Specs) ===
+  'specs-product-lines': [
+    { id: 1, name: '記憶體', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/memory-module.png', keywords: 'Memory Module', group: '產品類別' },
+    { id: 2, name: '固態硬碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/ssd.png', keywords: 'SSD', group: '產品類別' },
+    { id: 3, name: '外接固態硬碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/external-ssd.png', keywords: 'External SSD', group: '產品類別' },
+    { id: 4, name: '行動電源', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/power-bank.png', keywords: 'Power Bank', group: '產品類別' },
+    { id: 5, name: '記憶卡', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/sd-card.png', keywords: 'Memory Card', group: '產品類別' },
+    { id: 6, name: '隨身碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/flash-drive.png', keywords: 'Flash Drive', group: '產品類別' },
+    { id: 7, name: '配件', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/accessories.png', keywords: 'Accessories', group: '產品類別' },
+  ],
+  transmission: [
+    { id: 7, name: 'V90高速傳輸規格', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/high-speed-standard-v90.png', keywords: 'High-Speed Standard V90', group: '速度等級' },
+    { id: 6, name: 'V60高速傳輸規格', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/high-speed-standard-v60.png', keywords: 'High-Speed Standard V60', group: '速度等級' },
+    { id: 5, name: 'V30高速傳輸規格', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/high-speed-standard-v30.png', keywords: 'High-Speed Standard V30', group: '速度等級' },
+    { id: 8, name: '啟動時間縮短', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/faster-boot-time.png', keywords: 'Faster Boot Time', group: '讀寫行為' },
+    { id: 4, name: '讀寫速度', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/read-write-speed.png', keywords: 'Read/Write Speed', group: '讀寫行為' },
+    { id: 2, name: '讀取速度', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/read-speed.png', keywords: 'Read Speed', group: '讀寫行為' },
+    { id: 3, name: '寫入速度', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/write-speed.png', keywords: 'Write Speed', group: '讀寫行為' },
+    { id: 1, name: '高持續寫入', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/high-sustained-write.png', keywords: 'High Sustained Write', group: '讀寫行為' },
+    { id: 11, name: '性能提升', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/performance-boost.png', keywords: 'Performance Boost', group: '效能特色' },
+    { id: 10, name: '極速效能', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/extreme-performance.png', keywords: 'Extreme Performance', group: '效能特色' },
+    { id: 12, name: 'SLC Cache', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/slc-cache.png', keywords: 'SLC Cache', group: '效能特色' },
+  ],
+  power: [
+    { id: 1, name: 'PD快充', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/pd-fast-charging.png', keywords: 'PD Fast Charging', group: '充電技術' },
+    { id: 2, name: 'QC快充', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/qc-fast-charging.png', keywords: 'QC Fast Charging', group: '充電技術' },
+    { id: 23, name: '支援雙快充3.0', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/dual-fast-charging-3.png', keywords: 'QC / PD 3.0', group: '充電技術' },
+    { id: 24, name: '支援雙快充4.0', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/dual-fast-charging-4.png', keywords: 'QC / PD 4.0', group: '充電技術' },
+    { id: 4, name: '雙向快充', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/bi-directional-fast-charging.png', keywords: 'Bi-Directional Fast Charging', group: '充電技術' },
+    { id: 6, name: '磁吸充電', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/magnetic-charging.png', keywords: 'Magnetic Charging', group: '充電技術' },
+    { id: 5, name: '無線快充', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/wireless-charging.png', keywords: 'Wireless Charging', group: '充電技術' },
+    { id: 7, name: '多裝置充電', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/multi-device-charging.png', keywords: 'Multi-Device Charging', group: '充電技術' },
+    { id: 8, name: '功率輸出(W)', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/power-output-(w).png', keywords: 'Power Output (W)', group: '電池規格' },
+    { id: 12, name: '輕量電芯', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/lightweight-battery-core.png', keywords: 'Lightweight Battery Core', group: '電池規格' },
+    { id: 11, name: '未超過100wh', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/under-100wh.png', keywords: 'Under 100Wh', group: '電池規格' },
+    { id: 10, name: '電壓福特(V)', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/voltage-(v).png', keywords: 'Voltage (V)', group: '電池規格' },
+    { id: 9, name: '毫安培(mAh)', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/mAh-capacity.png', keywords: 'mAh Capacity', group: '電池規格' },
+    { id: 13, name: '電力相關', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/power-related.png', keywords: 'Power Related', group: '功能與狀態' },
+    { id: 17, name: '數位顯示', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/digital-display.png', keywords: 'Digital Display', group: '功能與狀態' },
+    { id: 18, name: 'LED電量顯示', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/led-power-display.png', keywords: 'LED Power Display', group: '功能與狀態' },
+    { id: 14, name: '電力保護', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/power-protection.png', keywords: 'Power Protection', group: '功能與狀態' },
+    { id: 16, name: '低電壓', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/low-voltage.png', keywords: 'Low Voltage', group: '功能與狀態' },
+    { id: 22, name: '通用電壓', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/universal-voltage.png', keywords: 'Universal Voltage', group: '功能與狀態' },
+    { id: 15, name: '自動省電', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/auto-power-saving.png', keywords: 'Auto Power Saving', group: '功能與狀態' },
+    { id: 21, name: '絕緣處理', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/insulation-treatment.png', keywords: 'Insulation Treatment', group: '飛航相關' },
+    { id: 20, name: '飛行禁止', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/flight-restricted.png', keywords: 'Flight Restricted', group: '飛航相關' },
+    { id: 19, name: '飛航安全', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/aviation-safety.png', keywords: 'Aviation Safety', group: '飛航相關' },
+  ],
+  protection: [
+    { id: 1, name: 'IP4防水', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/ipx4-waterproof.png', keywords: 'IPX4 Waterproof', group: '環境防護' },
+    { id: 2, name: '防塵', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/dustproof.png', keywords: 'Dustproof', group: '環境防護' },
+    { id: 9, name: '防曬防炎', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/uv-fire-resistant.png', keywords: 'UV & Fire Resistant', group: '環境防護' },
+    { id: 10, name: '防X光輻射', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/x-ray-protection.png', keywords: 'X-Ray Protection', group: '環境防護' },
+    { id: 3, name: '防震防水', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/waterproof-shockproof.png', keywords: 'Waterproof & Shockproof', group: '抗震耐用' },
+    { id: 4, name: '輕薄抗震', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/slim-shockproof.png', keywords: 'Slim Shockproof', group: '抗震耐用' },
+    { id: 5, name: '軍規防震', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/military-grade-shockproof.png', keywords: 'Military-Grade Shockproof', group: '抗震耐用' },
+    { id: 6, name: '防摔落', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/drop-protection.png', keywords: 'Drop Protection', group: '抗震耐用' },
+    { id: 7, name: '防刮耐磨', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/scratch-wear-resistant.png', keywords: 'Scratch & Wear Resistant', group: '抗震耐用' },
+    { id: 8, name: '防指紋沾染', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/anti-fingerprint.png', keywords: 'Anti-fingerprint', group: '抗震耐用' },
+    { id: 11, name: '溫度範圍', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/temperature-range.png', keywords: 'Temperature Range', group: '溫控散熱' },
+    { id: 12, name: '高效散熱', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/high-efficiency-cooling.png', keywords: 'High-Efficiency Cooling', group: '溫控散熱' },
+    { id: 13, name: '極致散熱', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/extreme-cooling.png', keywords: 'Extreme Cooling', group: '溫控散熱' },
+  ],
+  interface: [
+    { id: 1, name: 'USB A', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/usb-a.png', keywords: 'USB A', group: '傳輸介面' },
+    { id: 2, name: 'Type-C', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/type-c.png', keywords: 'Type-C', group: '傳輸介面' },
+    { id: 4, name: 'Type-C / USB A', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/type-c-usb-A.png', keywords: 'Type-C / USB A', group: '傳輸介面' },
+    { id: 5, name: 'Type-C to Type-C', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/type-c-to-type-c.png', keywords: 'Type-C to Type-C', group: '傳輸介面' },
+    { id: 6, name: 'USB-A to Lighting', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/usb-a-to-lighting.png', keywords: 'USB-A to Lighting', group: '傳輸介面' },
+    { id: 7, name: 'USB 3.2 Gen 2', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/usb-3.2-gen-2.png', keywords: 'USB 3.2 Gen 2', group: '傳輸介面' },
+    { id: 11, name: '三輸出埠', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/triple-output.png', keywords: 'Triple Output', group: '傳輸介面' },
+    { id: 12, name: '四輸出埠', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/quad-output.png', keywords: 'Quad Output', group: '傳輸介面' },
+    { id: 28, name: '七合一', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/7-in-1.png', keywords: '7-in-1', group: '傳輸介面' },
+    { id: 29, name: '十合一', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/10-in-1.png', keywords: '10-in-1', group: '傳輸介面' },
+    { id: 3, name: '4K HDMI', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/4k-hdmi.png', keywords: '4K HDMI', group: '影音規格' },
+    { id: 8, name: '4K UHD', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/4k-uhd.png', keywords: '4K UHD', group: '影音規格' },
+    { id: 9, name: '8K UHD', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/8k-uhd.png', keywords: '8K UHD', group: '影音規格' },
+    { id: 10, name: 'HD 1080P', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/hd-1080p.png', keywords: 'HD 1080P', group: '影音規格' },
+    { id: 13, name: '360° 不掉蓋', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/360-cap-free.png', keywords: '360° Cap-Free', group: '結構設計' },
+    { id: 20, name: '滑推設計', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/slide-design.png', keywords: 'Slide Design', group: '結構設計' },
+    { id: 21, name: '線材收納', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/cable-management.png', keywords: 'Cable Management', group: '結構設計' },
+    { id: 22, name: '內建充電線', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/built-in-charging-cable.png', keywords: 'Built-in Charging Cable', group: '結構設計' },
+    { id: 24, name: '雙接頭設計', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/dual-connector-design.png', keywords: 'Dual Connector Design', group: '結構設計' },
+    { id: 17, name: '輕薄設備(重量)', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/slim-device.png', keywords: 'Slim Device', group: '結構設計' },
+    { id: 18, name: '輕薄設備(外觀)', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/lightweight-device.png', keywords: 'Light weight Device', group: '結構設計' },
+    { id: 19, name: '強力磁吸(手機)', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/strong-magnetic-attachment.png', keywords: 'Strong Magnetic Attachment', group: '結構設計' },
+    { id: 26, name: '超凡設計', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/exceptional-design.png', keywords: 'Exceptional Design', group: '外觀工藝與功能' },
+    { id: 27, name: '優質工藝', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/premium-craftsmanship.png', keywords: 'Premium Craftsmanship', group: '外觀工藝與功能' },
+    { id: 15, name: 'LED 燈效', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/led-Indicator.png', keywords: 'LED Indicator', group: '外觀工藝與功能' },
+    { id: 16, name: 'RGB 燈效', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/rgb-lighting.png', keywords: 'RGB Lighting', group: '外觀工藝與功能' },
+    { id: 14, name: '安靜無聲', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/silent-operation.png', keywords: 'Silent Operation', group: '外觀工藝與功能' },
+    { id: 23, name: '重量五公斤', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/up-to-5kg.png', keywords: 'Up to 5kg', group: '外觀工藝與功能' },
+    { id: 25, name: '多規選擇', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/multiple-options.png', keywords: 'Multiple Options', group: '外觀工藝與功能' },
+  ],
+  'device-env': [
+    { id: 1, name: '桌電適用', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/desktop-compatible.png', keywords: 'Desktop Compatible', group: '運算與遊戲裝置' },
+    { id: 2, name: '筆電適用', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/laptop-compatible.png', keywords: 'Laptop Compatible', group: '運算與遊戲裝置' },
+    { id: 3, name: '電競桌電', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/gaming-desktop.png', keywords: 'Gaming Desktop', group: '運算與遊戲裝置' },
+    { id: 4, name: '掌機適用', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/handheld-console-compatible.png', keywords: 'Handheld Console Compatible', group: '運算與遊戲裝置' },
+    { id: 5, name: '順暢體驗(PS5)', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/smooth-experience.png', keywords: 'Smooth Experience', group: '運算與遊戲裝置' },
+    { id: 6, name: '手機適用', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/smartphone-compatible.png', keywords: 'Smartphone Compatible', group: '運算與遊戲裝置' },
+    { id: 7, name: '手遊玩家', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/mobile-gamer.png', keywords: 'Mobile Gamer', group: '運算與遊戲裝置' },
+    { id: 8, name: '桌機/筆電', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/desktop-laptop.png', keywords: 'Desktop/Laptop', group: '運算與遊戲裝置' },
+    { id: 9, name: '桌機/PS5', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/desktop-ps5.png', keywords: 'Desktop/PS5', group: '運算與遊戲裝置' },
+    { id: 10, name: '筆電/平板', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/laptop-tablet.png', keywords: 'Laptop/Tablet', group: '運算與遊戲裝置' },
+    { id: 11, name: '筆電/遊戲機/平板', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/laptop-game-consol-tablet.png', keywords: 'Laptop/Game Console/Tablet', group: '運算與遊戲裝置' },
+    { id: 12, name: 'pS4/桌機/筆電', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/ps4-desktop-laptop.png', keywords: 'PS4/Desktop/Laptop', group: '運算與遊戲裝置' },
+    { id: 13, name: '專業攝影', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/professional-photography.png', keywords: 'Professional Photography', group: '影像與攝錄設備' },
+    { id: 14, name: '照片', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/photos.png', keywords: 'Photos', group: '影像與攝錄設備' },
+    { id: 15, name: '影視製作', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/video-production.png', keywords: 'Video Production', group: '影像與攝錄設備' },
+    { id: 16, name: '行車紀錄', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/dash-cam.png', keywords: 'Dash Cam', group: '影像與攝錄設備' },
+    { id: 17, name: '監控設備', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/surveillance-equipment.png', keywords: 'Surveillance Equipment', group: '影像與攝錄設備' },
+    { id: 18, name: '車用音響', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/car-audio.png', keywords: 'Car Audio', group: '影音娛樂與其他' },
+    { id: 19, name: '音樂', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/music.png', keywords: 'Music', group: '影音娛樂與其他' },
+    { id: 20, name: '電視', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/television.png', keywords: 'Television', group: '影音娛樂與其他' },
+    { id: 21, name: 'e-Book', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/device/e-book.png', keywords: 'e-Book', group: '影音娛樂與其他' },
+  ],
+  'cert-tech': [
+    { id: 1, name: '國際認證Wh', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/international-certified-wh.png', keywords: 'International Certified Wh', group: '認證標章' },
+    { id: 2, name: 'NAS認證設計', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/nas-certified-design.png', keywords: 'NAS Certified Design', group: '認證標章' },
+    { id: 3, name: 'MFi認證(蘋果認證)', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/mfi-certified.png', keywords: 'MFi Certified', group: '認證標章' },
+    { id: 4, name: 'BSMI認證', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/bsmi-certified.png', keywords: 'BSMI Certified', group: '認證標章' },
+    { id: 5, name: '多國認證安全', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/multi-national-safety-certification.png', keywords: 'Multi-National Safety Certification', group: '認證標章' },
+    { id: 6, name: '3D NAND', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/3d-nand.png', keywords: '3D NAND', group: '晶片與技術' },
+    { id: 7, name: 'LDPC', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/ldpc.png', keywords: 'LDPC', group: '晶片與技術' },
+    { id: 8, name: '智慧平均抹寫', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/smart-wear-leveling.png', keywords: 'Smart Wear Leveling', group: '晶片與技術' },
+    { id: 9, name: 'V-0 阻燃等級', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/v-0-flame-retardant-rating.png', keywords: 'V-0 Flame Retardant Rating', group: '晶片與技術' },
+    { id: 16, name: 'AI 晶片', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/ai-chip.png', keywords: 'AI Chip', group: '晶片與技術' },
+    { id: 17, name: 'PCIe Gen 5x4 介面', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/pcIe-gen-5x4-Interface.png', keywords: 'PCIe Gen 5x4 Interface', group: '技術規範' },
+    { id: 18, name: 'CFexpress 4.0 Type B', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/cfexpress-4.0-type-b.png', keywords: 'CFexpress 4.0 Type B', group: '技術規範' },
+    { id: 19, name: '支援XMP', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/supports-xmp.png', keywords: 'Supports XMP', group: '技術規範' },
+    { id: 20, name: '支援EXPO', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/supports-expo.png', keywords: 'Supports EXPO', group: '技術規範' },
+    { id: 21, name: 'CL30~CL40', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/cl30-cl40.png', keywords: 'CL30~CL40', group: '技術規範' },
+    { id: 10, name: '高容量', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/high-capacity.png', keywords: 'High Capacity', group: '容量與特性' },
+    { id: 11, name: '最高4TB容量', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/high-4tb-capacity.png', keywords: 'High 4TB Capacity', group: '容量與特性' },
+    { id: 12, name: '最大容量', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/maximum-capacity.png', keywords: 'Maximum Capacity', group: '容量與特性' },
+    { id: 13, name: '資料保護', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/data-protection.png', keywords: 'Data Protection', group: '容量與特性' },
+    { id: 14, name: '卓越相容性', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/superior-compatibility.png', keywords: 'Superior Compatibility', group: '容量與特性' },
+    { id: 15, name: '強大穩定性', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/certification/strong-stability.png', keywords: 'Strong Stability', group: '容量與特性' },
+  ],
+  commercial: [
+    { id: 1, name: '顧客服務', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/customer-service.png', keywords: 'Customer Service', group: '售後服務' },
+    { id: 2, name: '申請換貨', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/exchange-request.png', keywords: 'Exchange Request', group: '售後服務' },
+    { id: 3, name: '退貨', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/return.png', keywords: 'Return', group: '售後服務' },
+    { id: 4, name: '換貨', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/product-exchange.png', keywords: 'Product Exchange', group: '售後服務' },
+    { id: 5, name: '終身保固', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/lifetime-warranty.png', keywords: 'Lifetime Warranty', group: '售後服務' },
+    { id: 6, name: '企業級方案', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/enterprise-grade-solution.png', keywords: 'Enterprise Grade Solution', group: '企業資訊' },
+    { id: 7, name: '公司大樓', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/company-hq.png', keywords: 'Company HQ', group: '企業資訊' },
+    { id: 8, name: '專屬工程團隊', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/dedicated-engineering-team.png', keywords: 'Dedicated Engineering Team', group: '企業資訊' },
+    { id: 9, name: '值得信賴', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/trustworthy.png', keywords: 'Trustworthy', group: '企業資訊' },
+    { id: 10, name: '靈活客製化', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/highly-flexible-customization.png', keywords: 'Highly Flexible Customization', group: '企業資訊' },
+    { id: 11, name: '高效經濟方案', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/cost-effective-solutions.png', keywords: 'Cost-Effective Solutions', group: '企業資訊' },
+    { id: 12, name: '永續設計', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/sustainable-design.png', keywords: 'Sustainable Design', group: '企業資訊' },
+    { id: 13, name: '郵件信箱', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/email-support.png', keywords: 'Email Support', group: '聯絡與通知' },
+    { id: 14, name: '通話設備', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/call-support.png', keywords: 'Call Support', group: '聯絡與通知' },
+    { id: 15, name: '地理資訊', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/location.png', keywords: 'Location', group: '聯絡與通知' },
+    { id: 16, name: '資訊設定', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/information-settings.png', keywords: 'Information Settings', group: '聯絡與通知' },
+    { id: 17, name: '通知警告', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/serve/notifications-alerts.png', keywords: 'Notifications & Alerts', group: '聯絡與通知' },
+  ],
+
+  // === 品牌類資料 (Brand) ===
+  'product-lines': [
+    { id: 1, name: '固態硬碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/(pink)products/ssd.png', keywords: '', group: '產品類別' },
+    { id: 2, name: '行動固態硬碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/(pink)products/phd.png', keywords: '', group: '產品類別' },
+    { id: 3, name: '外接式行動硬碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/(pink)products/psd.png', keywords: '', group: '產品類別' },
+    { id: 4, name: '記憶體', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/(pink)products/memory-card.png', keywords: '', group: '產品類別' },
+    { id: 5, name: '記憶卡', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/(pink)products/sd-card.png', keywords: '', group: '產品類別' },
+    { id: 6, name: '行動電源', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/(pink)products/power-bank.png', keywords: '', group: '產品類別' },
+    { id: 7, name: '配件', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/(pink)products/accessories.png', keywords: '', group: '產品類別' },
+  ],
+  ecommerce: [
+    // --- 分類一：會員機制 ---
+    { id: 1, name: '會員招募', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/member-recruitment.png', keywords: '', group: '會員機制' },
+    { id: 2, name: '會員綁定', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/member-linking.png', keywords: '', group: '會員機制' },
+    { id: 3, name: '官方購物網', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/official-online-store.png', keywords: '', group: '會員機制' },
+    { id: 4, name: 'SP會員日', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/sp-member-day.png', keywords: '', group: '會員機制' },
+    { id: 5, name: '購物金', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/shopping-credits.png', keywords: '', group: '會員機制' },
+    { id: 6, name: '專屬禮品', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/exclusive-gifts.png', keywords: '', group: '會員機制' },
+    { id: 7, name: '消費累點', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/points-accumulation.png', keywords: '', group: '會員機制' },
+    // --- 分類二：購物流程 ---
+    { id: 9, name: '掃描註冊', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/scan-to-register.png', keywords: '', group: '購物流程' },
+    { id: 10, name: '填寫資料', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/fill-in-information.png', keywords: '', group: '購物流程' },
+    { id: 11, name: '訂單成立', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/order-confirmed.png', keywords: '', group: '購物流程' },
+    { id: 13, name: '付款出貨', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/payment-shipping.png', keywords: '', group: '購物流程' },
+    { id: 12, name: '訂單查詢', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/order-tracking.png', keywords: '', group: '購物流程' },
+    { id: 8, name: '大宗採購', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/bulk-purchase.png', keywords: '', group: '購物流程' },
+  ],
+  support: [
+    // --- 區塊 1: 諮詢管道 ---
+    { id: 301, name: '客服', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/support/support.png', keywords: '', group: '諮詢管道' },
+    { id: 302, name: '溝通確認', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/support/confirm.png', keywords: '', group: '諮詢管道' },
+    { id: 303, name: 'E-Mail', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/support/e-mail.png', keywords: '', group: '諮詢管道' },
+    { id: 304, name: '兩者E-mail相同', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/support/same-email.png', keywords: '', group: '諮詢管道' },
+    { id: 305, name: '常見問題', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/support/faq.png', keywords: '', group: '諮詢管道' },
+    // --- 區塊 2: 保固維修 ---
+    { id: 306, name: '維修', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/support/repair.png', keywords: '', group: '保固維修' },
+    { id: 307, name: '保固/維修申請', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/support/service-request.png', keywords: '', group: '保固維修' },
+    { id: 308, name: '保固', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/support/warranty.png', keywords: '', group: '保固維修' },
+    { id: 309, name: '產品保障', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/support/protection.png', keywords: '', group: '保固維修' },
+    { id: 310, name: '產品相容性', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/support/compatibility.png', keywords: '', group: '保固維修' },
+  ],
+  marketing: [
+    // --- 分類一：導覽內容 ---
+    { id: 401, name: '依內容挑選', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/marketing/by-use.png', keywords: '', group: '導覽內容' },
+    { id: 402, name: '全系列總覽', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/marketing/overview.png', keywords: '', group: '導覽內容' },
+    { id: 403, name: 'AI工具', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/marketing/ai-tools.png', keywords: '', group: '導覽內容' },
+    { id: 404, name: '生活體驗', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/marketing/lifestyle.png', keywords: '', group: '導覽內容' },
+    { id: 405, name: '獨家內容', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/marketing/exclusive.png', keywords: '', group: '導覽內容' },
+    // --- 分類二：促銷購物 ---
+    { id: 406, name: '活動資訊', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/marketing/events.png', keywords: '', group: '促銷購物' },
+    { id: 407, name: '新品上市', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/marketing/new.png', keywords: '', group: '促銷購物' },
+    { id: 408, name: '熱銷排行榜', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/marketing/best-sellers.png', keywords: '', group: '促銷購物' },
+    { id: 409, name: '福利品特惠', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/marketing/deals.png', keywords: '', group: '促銷購物' },
+  ],
+  features: [
+    // --- 分類一：品牌實力 ---
+    { id: 501, name: '4000+產品', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/brand/4000-products.png', keywords: '', group: '品牌實力' },
+    { id: 502, name: '銷量破萬', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/brand/10k-sales.png', keywords: '', group: '品牌實力' },
+    { id: 503, name: '銷售百國', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/brand/global.png', keywords: '', group: '品牌實力' },
+    { id: 504, name: '國際獎項', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/brand/awards.png', keywords: '', group: '品牌實力' },
+    { id: 505, name: '台灣製造（MIT）', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/brand/made-in-taiwan.png', keywords: '', group: '品牌實力' },
+    { id: 506, name: '值得信賴', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/brand/trusted.png', keywords: '', group: '品牌實力' },
+    // --- 分類二：技術優勢 ---
+    { id: 507, name: '優質工藝', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/brand/craftsmanship.png', keywords: '', group: '技術優勢' },
+    { id: 508, name: '超凡設計', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/brand/design.png', keywords: '', group: '技術優勢' },
+    { id: 509, name: '炫彩燈效', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/brand/rgb-lighting.png', keywords: '', group: '技術優勢' },
+    { id: 510, name: '極致散熱', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/brand/cooling.png', keywords: '', group: '技術優勢' },
+    { id: 511, name: '極速效能', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/brand/performance.png', keywords: '', group: '技術優勢' },
+  ],
+  corporate: [
+    { id: 601, name: 'SP Logo', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/corporate/logo.png', keywords: '', group: '企業形象' },
+    { id: 602, name: '公司股票代碼', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/corporate/stock-code.png', keywords: '', group: '企業形象' },
+    { id: 603, name: '團隊合作', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/corporate/teamwork.png', keywords: '', group: '企業形象' },
+    { id: 604, name: '學習成長', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/corporate/wellness.png', keywords: '', group: '企業形象' },
+    { id: 605, name: '健康照顧', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/corporate/growth.png', keywords: '', group: '企業形象' },
+  ]
+};
+
+const DEFAULT_ITEMS = [
+  { id: 901, name: 'Sample Icon 1', icon: Star, keywords: '範例 / Sample' },
+  { id: 902, name: 'Sample Icon 2', keywords: '測試 / Test' },
+];
+
+// --- 3. 內頁：單一類別列表 ---
+const IconCard = ({ item, variant }) => {
+  const isSpecs = variant === 'specs';
+  const titleColor = isSpecs ? 'text-gray-900' : 'text-gray-900';
+  const borderColor = isSpecs ? 'hover:border-gray-900' : 'hover:border-pink-300';
+
+  // 邏輯升級：同時支援 SVG Component (icon) 與 圖片網址 (imageUrl)
+  const ItemIconComponent = item.icon;
+  const ItemImageUrl = item.imageUrl;
+
+  return (
+    <div className={`flex flex-col items-center justify-center text-center gap-2.5 p-4 border border-gray-100 transition-all duration-300 bg-white rounded-xl shadow-sm hover:shadow-md h-full`}>
+      {/* 圖片區域：精準設定為 88px (等同於 w-22 h-22) */}
+      <div className="w-16 h-16 sm:w-[88px] sm:h-[88px] flex items-center justify-center shrink-0 mb-1">
+        {ItemImageUrl ? (
+          // 情況 A: 使用圖片網址 (方案 B)
+          <img 
+            src={ItemImageUrl} 
+            alt={item.name} 
+            className="w-full h-full object-contain"
+          />
+        ) : ItemIconComponent ? (
+          // 情況 B: 使用 SVG 組件 (方案 A)
+          <ItemIconComponent className="w-full h-full object-contain" />
+        ) : (
+          // 情況 C: 沒圖時的預設文字
+          <div className="w-12 h-12 border-2 border-gray-300 rounded-full flex items-center justify-center font-bold text-xs text-gray-400">
+            {item.name.substring(0, 2).toUpperCase()}
+          </div>
+        )}
+      </div>
+      
+      {/* 文字區域：微調文字大小與行距 */}
+      <div className="flex flex-col w-full">
+        <h4 className={`font-bold text-[13px] sm:text-sm ${titleColor} mb-0.5 truncate`}>
+          {item.name}
+        </h4>
+        {/* 只有當 keywords 存在時才顯示 (品牌識別區通常無 keyword) */}
+        {item.keywords && (
+          <p className="text-[10px] sm:text-[11px] text-gray-400 break-words leading-tight select-all">
+            {item.keywords}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const DetailPage = ({ category, context, onBack, onSwitchCategory }) => {
+  const items = ITEMS_DATA[category.id] || DEFAULT_ITEMS;
+  const isSpecs = context === 'specs';
+  const themeColor = isSpecs ? 'text-gray-900' : 'text-pink-600';
+  const categories = isSpecs ? SPECS_CATEGORIES : BRAND_CATEGORIES;
+
+  // Add useEffect for scrolling to top on category change
+  useEffect(() => {
+    const handleScroll = () => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+    const timer = setTimeout(handleScroll, 10);
+    return () => clearTimeout(timer);
+  }, [category.id]);
+
+  // Check if items have grouping
+  const hasGroups = items.some(item => item.group);
+  
+  // Define group order mapping for specific categories
+  const categoryGroupOrders = {
+    'specs-product-lines': ['產品類別'],
+    'transmission': ['速度等級', '讀寫行為', '效能特色'],
+    'power': ['充電技術', '電池規格', '功能與狀態', '飛航相關'],
+    'protection': ['環境防護', '抗震耐用', '溫控散熱'],
+    'interface': ['傳輸介面', '影音規格', '結構設計', '外觀工藝與功能'],
+    'device-env': ['運算與遊戲裝置', '影像與攝錄設備', '影音娛樂與其他'],
+    'cert-tech': ['認證標章', '晶片與技術', '技術規範', '容量與特性'],
+    'commercial': ['售後服務', '企業資訊', '聯絡與通知'],
+    'product-lines': ['產品類別'],
+    'support': ['諮詢管道', '保固維修'],
+    'ecommerce': ['會員機制', '購物流程'],
+    'marketing': ['導覽內容', '促銷購物'],
+    'features': ['品牌實力', '技術優勢'],
+    'corporate': ['企業形象'],
+  };
+
+  // Get group order for current category
+  const groupOrder = categoryGroupOrders[category.id] || (hasGroups ? [...new Set(items.map(item => item.group).filter(Boolean))] : []);
+
+  // Helper function to handle scrolling to a group
+  const scrollToGroup = (groupName) => {
+    const element = document.getElementById(groupName);
+    if (element) {
+      // Offset for sticky header (Header + Tabs + SubNav)
+      // 已增加 offset 數值為 220，避免標題被遮擋
+      const headerOffset = 220; 
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  // Helper to render grid：微調卡片數量列，讓 w-22 尺寸的卡片有足夠呼吸空間
+  const renderGrid = (itemList) => (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-5">
+      {itemList.map((item) => (
+        <IconCard key={item.id} item={item} variant={context} />
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50/50 animate-in slide-in-from-right duration-300">
+      {/* 1. Main Header (Sticky) */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
+        <div className="max-w-[1600px] mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+              <ArrowLeft size={24} />
+            </button>
+            <h1 className="text-lg md:text-xl font-bold tracking-wide flex items-center gap-2">
+              <span className={`px-2 py-0.5 rounded text-sm tracking-wide ${isSpecs ? 'bg-black text-white' : 'bg-pink-600 text-white'}`}>
+                {isSpecs ? 'SPECS' : 'BRAND'}
+              </span>
+              <span>{category.title}</span>
+            </h1>
+          </div>
+          <div className="hidden md:flex items-center gap-2 text-xs text-gray-400 bg-gray-100 px-3 py-1.5 rounded-full">
+            <Search size={12} />
+            <span>Ctrl + F to search</span>
+          </div>
+        </div>
+      </header>
+
+      {/* 2. Category Tabs Bar & Sub-navigation (Sticky below header) */}
+      <div className="sticky top-16 z-40 bg-gray-50/95 backdrop-blur-sm border-b border-gray-200 shadow-sm flex flex-col">
+        <div className="max-w-[1600px] mx-auto px-4 pt-5 pb-4 w-full">
+          
+          {/* Main Category Tabs */}
+          <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide justify-center">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => onSwitchCategory(cat)}
+                className={`
+                  whitespace-nowrap px-5 py-2 rounded-full text-sm font-medium transition-all border
+                  ${cat.id === category.id 
+                    ? (isSpecs ? 'bg-black text-white border-black shadow-md scale-105' : 'bg-pink-600 text-white border-pink-600 shadow-md scale-105')
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400 hover:text-gray-900'
+                  }
+                `}
+              >
+                {cat.title}
+              </button>
+            ))}
+          </div>
+
+          {/* Sub-navigation Anchors */}
+          {hasGroups && groupOrder.length > 0 && (
+            <div className="flex items-center justify-center gap-4 mt-4 mb-1 flex-wrap text-xs text-gray-500">
+              {groupOrder.map((groupName, index) => (
+                <React.Fragment key={`subnav-${groupName}`}>
+                  <button
+                    onClick={() => scrollToGroup(groupName)}
+                    className="hover:text-black transition-colors font-normal tracking-wide"
+                  >
+                    {groupName}
+                  </button>
+                  {index < groupOrder.length - 1 && (
+                    <span className="text-gray-300">|</span>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* 4. Main Content Area */}
+      <main className="max-w-[1600px] mx-auto p-6 md:p-10 pb-96">
+        
+        {hasGroups ? (
+          <div className="space-y-16">
+            {groupOrder.map(groupName => {
+              const groupItems = items.filter(i => i.group === groupName);
+              if (groupItems.length === 0) return null;
+              return (
+                <div key={groupName} id={groupName} className="scroll-mt-48"> 
+                  <h3 className="text-base font-bold text-gray-800 mb-4 pl-2 border-l-2 border-black flex items-center">
+                    {groupName}
+                  </h3>
+                  {renderGrid(groupItems)}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          renderGrid(items)
+        )}
+
+        <div className="mt-20 pt-8 border-t border-gray-200 text-center text-xs text-gray-400">
+          最新更新時間：2026/02/10
+        </div>
+      </main>
+    </div>
+  );
+};
+
+// --- 1. 首頁：雙入口 (Landing Split) ---
+const LandingPage = ({ onSelectContext }) => {
+  return (
+    // 移除 font-sans，讓外層的 Poppins 生效
+    <div className="h-screen w-full flex flex-col md:flex-row overflow-hidden relative">
+      
+      {/* 左上角小標籤 */}
+      <div className="absolute top-4 left-4 z-50 pointer-events-none">
+        <h3 className="text-[10px] md:text-xs font-bold tracking-widest text-gray-500 uppercase">
+          Silicon Power Icons Library
+        </h3>
+      </div>
+
+      {/* 左側：規格入口 (Specs) */}
+      <div 
+        onClick={() => onSelectContext('specs')}
+        className="relative flex-1 bg-gray-100 md:hover:flex-[1.2] transition-all duration-500 cursor-pointer flex flex-col items-center justify-center p-10 group border-b md:border-b-0 md:border-r border-gray-200"
+      >
+        <div className="absolute inset-0 bg-grid-gray-900/[0.05] pointer-events-none" />
+        <div className="z-10 text-center">
+          {/* 白色圓圈樣式：
+            - bg-white: 白底
+            - w-24 h-24: 稍微縮小 (原本 28)
+            - group-hover:scale-110: 懸停放大
+            - 移除 shadow-lg: 扁平化質感
+          */}
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-all duration-300">
+            {/* Logo 圖片樣式：
+              - opacity-50: 預設半透明
+              - group-hover:opacity-100: 懸停變清楚
+            */}
+            <img 
+              src="https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/logo/spec.png" 
+              alt="Technical Specs" 
+              className="w-14 h-14 object-contain opacity-50 group-hover:opacity-100 transition-opacity duration-300" 
+            />
+          </div>
+          <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-widest mb-4">
+            產品規格專區
+            {/* 移除 font-mono */}
+            <span className="block text-base md:text-lg font-medium text-gray-400 mt-2 tracking-normal">Technical Specs</span>
+          </h2>
+          {/* 修改說明文大小 text-sm -> text-sm */}
+          <p className="text-sm text-gray-500 max-w-xs mx-auto opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+            產品相關視覺、技術規格表…
+          </p>
+        </div>
+        <div className="absolute bottom-10 left-0 right-0 text-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest border-b-2 border-black pb-1">
+            Enter Library <ChevronRight size={14} />
+          </span>
+        </div>
+      </div>
+
+      {/* 右側：品牌入口 (Brand) */}
+      <div 
+        onClick={() => onSelectContext('brand')}
+        className="relative flex-1 bg-pink-600 hover:bg-pink-700 md:hover:flex-[1.2] transition-all duration-500 cursor-pointer flex flex-col items-center justify-center p-10 group text-white"
+      >
+        <div className="absolute inset-0 bg-grid-white/[0.1] pointer-events-none" />
+        <div className="z-10 text-center">
+          {/* 同樣套用縮小版白色圓圈 + 透明度效果 */}
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-all duration-300">
+            <img 
+              src="https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/logo/brand.png" 
+              alt="Brand Identity" 
+              className="w-14 h-14 object-contain opacity-50 group-hover:opacity-100 transition-opacity duration-300" 
+            />
+          </div>
+          <h2 className="text-2xl md:text-3xl font-black text-white tracking-widest mb-4">
+            品牌識別專區
+            {/* 移除 font-mono */}
+            <span className="block text-base md:text-lg font-medium text-pink-200 mt-2 tracking-normal">Brand Identity</span>
+          </h2>
+          {/* 修改說明文大小 text-sm -> text-sm */}
+          <p className="text-sm text-pink-100 max-w-xs mx-auto opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+            官網、品牌購物網、官方Line平台…
+          </p>
+        </div>
+        <div className="absolute bottom-10 left-0 right-0 text-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest border-b-2 border-white pb-1">
+            Explore Brand <ChevronRight size={14} />
+          </span>
+        </div>
+      </div>
+
+    </div>
+  );
+};
+
+export default function App() {
+  const [context, setContext] = useState(null); // 'specs' | 'brand'
+  const [activeCategory, setActiveCategory] = useState(null);
+
+  // 進入區塊時的邏輯：設定 Context 並預設選取第一個分類
+  const handleEnterContext = (selectedContext) => {
+    setContext(selectedContext);
+    if (selectedContext === 'specs') {
+      setActiveCategory(SPECS_CATEGORIES[0]);
+    } else {
+      setActiveCategory(BRAND_CATEGORIES[0]);
+    }
+  };
+
+  const goHome = () => {
+    setContext(null);
+    setActiveCategory(null);
+  };
+
+  // 1. 沒選 Context -> 首頁
+  if (!context) {
+    return <LandingPage onSelectContext={handleEnterContext} />;
+  }
+
+  // 2. 選了 Context (且因為自動設定了 activeCategory，所以直接進入 DetailPage)
+  return (
+    <>
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&display=swap');
+          body {
+            font-family: 'Poppins', sans-serif;
+          }
+        `}
+      </style>
+      <DetailPage 
+        context={context}
+        category={activeCategory} 
+        onBack={goHome}
+        onSwitchCategory={setActiveCategory} // 傳遞切換分類的函式
+      />
+    </>
+  );
+}
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
