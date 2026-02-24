@@ -14,142 +14,128 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&display=swap');
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f9fafb; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body>
-    <div id="root"><h1 style="text-align:center; padding: 50px;">正在努力載入圖示庫...</h1></div>
+    <div id="root"><h1 style="text-align:center; padding-top: 50px;">載入中... (Loading)</h1></div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
         const { Zap, Shield, Wifi, Monitor, Cable, Layers, ArrowLeft, Search, Package, ShoppingBag, LifeBuoy, Megaphone, Star, Building2 } = LucideReact;
 
         const SPECS_CATEGORIES = [
-          { id: 'specs-product-lines', title: '產品類別', icon: Package },
-          { id: 'transmission', title: '傳輸與效能', icon: Cable },
-          { id: 'power', title: '電力與充電', icon: Zap },
-          { id: 'protection', title: '防護與耐用', icon: Shield },
-          { id: 'interface', title: '介面與外觀', icon: Layers },
-          { id: 'device-env', title: '裝置與環境', icon: Monitor },
-          { id: 'cert-tech', title: '認證與技術', icon: Wifi },
-          { id: 'commercial', title: '商業服務', icon: Building2 },
+            { id: 'specs-product-lines', title: '產品類別', icon: Package },
+            { id: 'transmission', title: '傳輸與效能', icon: Cable },
+            { id: 'power', title: '電力與充電', icon: Zap },
+            { id: 'protection', title: '防護與耐用', icon: Shield },
+            { id: 'interface', title: '介面與外觀', icon: Layers },
+            { id: 'device-env', title: '裝置與環境', icon: Monitor },
+            { id: 'cert-tech', title: '認證與技術', icon: Wifi },
+            { id: 'commercial', title: '商業服務', icon: Building2 }
         ];
 
         const BRAND_CATEGORIES = [
-          { id: 'product-lines', title: '產品類別', icon: Package },
-          { id: 'ecommerce', title: '會員電商', icon: ShoppingBag },
-          { id: 'support', title: '客服支援', icon: LifeBuoy },
-          { id: 'marketing', title: '行銷活動', icon: Megaphone },
-          { id: 'features', title: '品牌特色', icon: Star },
-          { id: 'corporate', title: '企業形象', icon: Building2 },
+            { id: 'product-lines', title: '產品類別', icon: Package },
+            { id: 'ecommerce', title: '會員電商', icon: ShoppingBag },
+            { id: 'support', title: '客服支援', icon: LifeBuoy },
+            { id: 'marketing', title: '行銷活動', icon: Megaphone },
+            { id: 'features', title: '品牌特色', icon: Star },
+            { id: 'corporate', title: '企業形象', icon: Building2 }
         ];
 
         const ITEMS_DATA = {
-          'specs-product-lines': [
-            { id: 1, name: '記憶體', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/memory-module.png', keywords: 'Memory Module', group: '產品類別' },
-            { id: 2, name: '固態硬碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/ssd.png', keywords: 'SSD', group: '產品類別' },
-            { id: 3, name: '外接固態硬碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/external-ssd.png', keywords: 'External SSD', group: '產品類別' },
-            { id: 4, name: '行動電源', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/power-bank.png', keywords: 'Power Bank', group: '產品類別' },
-            { id: 5, name: '記憶卡', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/sd-card.png', keywords: 'Memory Card', group: '產品類別' },
-            { id: 6, name: '隨身碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/flash-drive.png', keywords: 'Flash Drive', group: '產品類別' },
-            { id: 7, name: '配件', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/accessories.png', keywords: 'Accessories', group: '產品類別' },
-          ],
-          'transmission': [
-            { id: 7, name: 'V90高速規格', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/high-speed-standard-v90.png', group: '速度等級' },
-            { id: 8, name: '啟動時間縮短', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/faster-boot-time.png', group: '讀寫行為' },
-            { id: 11, name: '性能提升', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/performance-boost.png', group: '效能特色' },
-          ],
-          'power': [
-            { id: 301, name: 'PD快充', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/pd-fast-charging.png', group: '充電技術' },
-            { id: 303, name: '毫安培(mAh)', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/mAh-capacity.png', group: '電池規格' },
-          ],
-          'protection': [
-            { id: 401, name: 'IP4防水', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/ipx4-waterproof.png', group: '環境防護' },
-            { id: 402, name: '軍規防震', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/protection/military-grade-shockproof.png', group: '抗震耐用' },
-          ],
-          'interface': [
-            { id: 501, name: 'Type-C', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/type-c.png', group: '傳輸介面' },
-            { id: 502, name: 'RGB 燈效', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/interface/rgb-lighting.png', group: '外觀工藝與功能' },
-          ],
-          'product-lines': [
-            { id: 1001, name: '固態硬碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/(pink)products/ssd.png', group: '產品類別' },
-          ],
-          'ecommerce': [
-            { id: 1101, name: '會員招募', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/e-shop/member-recruitment.png', group: '會員機制' }
-          ]
+            'specs-product-lines': [
+                { id: 1, name: '記憶體', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/memory-module.png', group: '產品類別' },
+                { id: 2, name: '固態硬碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/ssd.png', group: '產品類別' },
+                { id: 3, name: '外接固態硬碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/external-ssd.png', group: '產品類別' },
+                { id: 4, name: '行動電源', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/power-bank.png', group: '產品類別' },
+                { id: 5, name: '記憶卡', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/sd-card.png', group: '產品類別' },
+                { id: 6, name: '隨身碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/flash-drive.png', group: '產品類別' },
+                { id: 7, name: '配件', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/accessories.png', group: '產品類別' }
+            ],
+            'transmission': [
+                { id: 201, name: 'V90高速規格', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/high-speed-standard-v90.png', group: '速度等級' },
+                { id: 202, name: 'V60高速規格', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/speed/high-speed-standard-v60.png', group: '速度等級' }
+            ],
+            'power': [
+                { id: 301, name: 'PD快充', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/electricity/pd-fast-charging.png', group: '充電技術' }
+            ],
+            'product-lines': [
+                { id: 1001, name: '固態硬碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/(pink)products/ssd.png', group: '產品類別' }
+            ]
         };
 
-        const IconCard = ({ item, variant }) => (
-          <div className="flex flex-col items-center justify-center text-center p-4 border border-gray-100 bg-white rounded-xl shadow-sm hover:border-pink-300 transition-all h-full">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mb-2">
-              <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain" />
+        const IconCard = ({ item }) => (
+            <div className="flex flex-col items-center justify-center p-4 border border-gray-100 bg-white rounded-xl shadow-sm hover:border-pink-300 transition-all h-full">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mb-2">
+                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain" />
+                </div>
+                <h4 className="font-bold text-sm text-gray-900">{item.name}</h4>
             </div>
-            <h4 className="font-bold text-sm text-gray-900">{item.name}</h4>
-          </div>
         );
 
         const DetailPage = ({ category, context, onBack, onSwitchCategory }) => {
-          const items = ITEMS_DATA[category.id] || [];
-          const isSpecs = context === 'specs';
-          const categories = isSpecs ? SPECS_CATEGORIES : BRAND_CATEGORIES;
-          const groups = [...new Set(items.map(i => i.group).filter(Boolean))];
+            const items = ITEMS_DATA[category.id] || [];
+            const isSpecs = context === 'specs';
+            const categories = isSpecs ? SPECS_CATEGORIES : BRAND_CATEGORIES;
+            const groups = [...new Set(items.map(i => i.group).filter(Boolean))];
 
-          return (
-            <div className="min-h-screen">
-              <header className="sticky top-0 z-50 bg-white shadow-sm px-4 h-16 flex items-center gap-4">
-                <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full"><ArrowLeft size={24} /></button>
-                <h1 className="font-bold flex items-center gap-2">
-                    <span className={`px-2 py-0.5 rounded text-xs text-white ${isSpecs ? 'bg-black' : 'bg-pink-600'}`}>{isSpecs ? 'SPECS' : 'BRAND'}</span>
-                    {category.title}
-                </h1>
-              </header>
-              <div className="sticky top-16 z-40 bg-white border-b p-4 flex gap-3 overflow-x-auto scrollbar-hide">
-                {categories.map(cat => (
-                  <button key={cat.id} onClick={() => onSwitchCategory(cat)} className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium border ${cat.id === category.id ? (isSpecs ? 'bg-black text-white' : 'bg-pink-600 text-white') : 'bg-white text-gray-500'}`}>
-                    {cat.title}
-                  </button>
-                ))}
-              </div>
-              <main className="max-w-7xl mx-auto p-6">
-                {groups.length > 0 ? groups.map(g => (
-                  <div key={g} className="mb-10">
-                    <h3 className="font-bold text-gray-800 mb-6 border-l-4 border-pink-500 pl-3">{g}</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-                      {items.filter(i => i.group === g).map(item => <IconCard key={item.id} item={item} />)}
+            return (
+                <div className="min-h-screen">
+                    <header className="sticky top-0 z-50 bg-white shadow-sm px-4 h-16 flex items-center gap-4">
+                        <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full"><ArrowLeft size={24} /></button>
+                        <h1 className="font-bold flex items-center gap-2">
+                            <span className={`px-2 py-0.5 rounded text-xs text-white ${isSpecs ? 'bg-black' : 'bg-pink-600'}`}>{isSpecs ? 'SPECS' : 'BRAND'}</span>
+                            {category.title}
+                        </h1>
+                    </header>
+                    <div className="sticky top-16 z-40 bg-white border-b p-4 flex gap-3 overflow-x-auto scrollbar-hide">
+                        {categories.map(cat => (
+                            <button key={cat.id} onClick={() => onSwitchCategory(cat)} className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium border ${cat.id === category.id ? (isSpecs ? 'bg-black text-white' : 'bg-pink-600 text-white') : 'bg-white text-gray-500'}`}>
+                                {cat.title}
+                            </button>
+                        ))}
                     </div>
-                  </div>
-                )) : <div className="text-center py-20 text-gray-400">目前分類建置中...</div>}
-              </main>
-            </div>
-          );
+                    <main className="max-w-7xl mx-auto p-6">
+                        {groups.length > 0 ? groups.map(g => (
+                            <div key={g} className="mb-10">
+                                <h3 className="font-bold text-gray-800 mb-6 border-l-4 border-pink-500 pl-3">{g}</h3>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                                    {items.filter(i => i.group === g).map(item => <IconCard key={item.id} item={item} />)}
+                                </div>
+                            </div>
+                        )) : <div className="text-center py-20 text-gray-400">目前分類建置中...</div>}
+                    </main>
+                </div>
+            );
         };
 
         const LandingPage = ({ onSelect }) => (
-          <div className="h-screen w-full flex flex-col md:flex-row">
-            <div onClick={() => onSelect('specs')} className="flex-1 bg-gray-100 flex flex-col items-center justify-center cursor-pointer group border-r">
-              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-all shadow-sm">
-                 <Package className="text-gray-400 group-hover:text-black" size={40} />
-              </div>
-              <h2 className="text-2xl font-black text-gray-900 tracking-widest">產品規格專區</h2>
+            <div className="h-screen w-full flex flex-col md:flex-row">
+                <div onClick={() => onSelect('specs')} className="flex-1 bg-gray-100 flex flex-col items-center justify-center cursor-pointer group border-r">
+                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-all shadow-sm">
+                        <Package className="text-gray-400 group-hover:text-black" size={40} />
+                    </div>
+                    <h2 className="text-2xl font-black text-gray-900 tracking-widest">產品規格專區</h2>
+                </div>
+                <div onClick={() => onSelect('brand')} className="flex-1 bg-pink-600 flex flex-col items-center justify-center cursor-pointer group text-white">
+                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-all shadow-sm">
+                        <Star className="text-pink-300 group-hover:text-pink-600" size={40} />
+                    </div>
+                    <h2 className="text-2xl font-black tracking-widest">品牌識別專區</h2>
+                </div>
             </div>
-            <div onClick={() => onSelect('brand')} className="flex-1 bg-pink-600 flex flex-col items-center justify-center cursor-pointer group text-white">
-              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-all shadow-sm">
-                 <Star className="text-pink-300 group-hover:text-pink-600" size={40} />
-              </div>
-              <h2 className="text-2xl font-black tracking-widest">品牌識別專區</h2>
-            </div>
-          </div>
         );
 
         function App() {
-          const [context, setContext] = useState(null);
-          const [activeCategory, setActiveCategory] = useState(null);
-          const handleEnter = (ctx) => {
-            setContext(ctx);
-            setActiveCategory(ctx === 'specs' ? SPECS_CATEGORIES[0] : BRAND_CATEGORIES[0]);
-          };
-          if (!context) return <LandingPage onSelect={handleEnter} />;
-          return <DetailPage context={context} category={activeCategory} onBack={() => setContext(null)} onSwitchCategory={setActiveCategory} />;
+            const [context, setContext] = useState(null);
+            const [activeCategory, setActiveCategory] = useState(null);
+            const handleEnter = (ctx) => {
+                setContext(ctx);
+                setActiveCategory(ctx === 'specs' ? SPECS_CATEGORIES[0] : BRAND_CATEGORIES[0]);
+            };
+            if (!context) return <LandingPage onSelect={handleEnter} />;
+            return <DetailPage context={context} category={activeCategory} onBack={() => setContext(null)} onSwitchCategory={setActiveCategory} />;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
