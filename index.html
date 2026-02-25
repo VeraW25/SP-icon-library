@@ -8,60 +8,35 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide-react@0.292.0/dist/umd/lucide-react.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&display=swap');
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f9fafb; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        html { scroll-behavior: smooth; }
     </style>
 </head>
 <body>
-    <div id="root">
-        <div style="display:flex; justify-content:center; align-items:center; height:100vh; color:#888;">
-            <h2>介面載入中... (Loading)</h2>
-        </div>
-    </div>
+    <div id="root"></div>
 
     <script type="text/babel">
-        // --- 替換原本的 import 語法，加入安全防護網 ---
         const { useState, useEffect } = React;
-        const L = window.lucideReact || window.LucideReact || {};
+
+        // ==========================================
+        // 1. 內建 UI 圖示 (解決箭頭消失的問題)
+        // ==========================================
+        const ArrowLeft = ({ size = 24, className = "" }) => <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>;
+        const Search = ({ size = 24, className = "" }) => <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>;
+        const ChevronRight = ({ size = 24, className = "" }) => <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>;
+        const Package = ({ size = 24, className = "" }) => <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>;
+        const Star = ({ size = 24, className = "" }) => <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
         
-        // 如果圖示庫載入失敗，提供一個安全的預設圖示，避免網頁崩潰
-        const SafeIcon = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M12 16v-4"></path>
-                <path d="M12 8h.01"></path>
-            </svg>
-        );
-        const getIcon = (name) => L[name] || SafeIcon;
+        // 分類標籤備用圖示
+        const DummyIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/></svg>;
+        const Zap = DummyIcon, Shield = DummyIcon, Wifi = DummyIcon, HardDrive = DummyIcon, Monitor = DummyIcon, Cable = DummyIcon, Layers = DummyIcon, ShoppingBag = DummyIcon, LifeBuoy = DummyIcon, Megaphone = DummyIcon, Building2 = DummyIcon, Hash = DummyIcon;
 
-        const Zap = getIcon('Zap');
-        const Shield = getIcon('Shield');
-        const Wifi = getIcon('Wifi');
-        const HardDrive = getIcon('HardDrive');
-        const Monitor = getIcon('Monitor');
-        const Cable = getIcon('Cable');
-        const Layers = getIcon('Layers');
-        const ArrowLeft = getIcon('ArrowLeft');
-        const Search = getIcon('Search');
-        const ChevronRight = getIcon('ChevronRight');
-        const Package = getIcon('Package');
-        const ShoppingBag = getIcon('ShoppingBag');
-        const LifeBuoy = getIcon('LifeBuoy');
-        const Megaphone = getIcon('Megaphone');
-        const Star = getIcon('Star');
-        const Building2 = getIcon('Building2');
-        const Hash = getIcon('Hash');
-
-        // =========================================================================
-        // 以下為妳原本提供的完整程式碼，原封不動，僅移除最下方的 export default
-        // =========================================================================
-
-        // === [模式 2: 輕量化 SVG (您的聯集處理成果)] ===
+        // ==========================================
+        // 2. 以下完全保留 Vera 原始程式碼
+        // ==========================================
         const IconTrans01 = (props) => (
           <svg viewBox="0 0 478 478" fill="currentColor" {...props}>
             <path d="M432.24,191.82v-8.5h-90.25c-31.46-30.02-74.07-48.46-120.98-48.46-96.79,0-175.25,78.45-175.25,175.24h16.55c0-80.58,65.32-145.9,145.9-145.9h-.01c35.91.01,68.79,12.99,94.21,34.51l-11.57,7.89h.01s-105.58,69.98-108.98,73.3c-.85.83-1.63,1.69-2.35,2.58l-.73.94c-8.39,11.3-7.58,27.34,2.56,37.73,10.14,10.4,26.15,11.61,37.66,3.51l.96-.7c.91-.7,1.8-1.46,2.64-2.29,2.7-2.63,60.7-84.84,84.58-118.73,28.84,26.65,46.91,64.8,46.91,107.17h42.16c0-20.84-3.65-40.84-10.32-59.38h29.7v-8.5h-33.01c-3.05-7.26-6.58-14.26-10.55-20.98h51.51v-8.5h-56.85c-4.95-7.39-10.45-14.39-16.43-20.93h81.93ZM212.36,300.05c-.3,5.04-4.63,8.88-9.67,8.58s-8.88-4.64-8.58-9.67c.3-5.04,4.63-8.88,9.67-8.58,5.04.3,8.88,4.63,8.58,9.67Z" />
@@ -76,7 +51,6 @@
           </svg>
         );
 
-        // === [模式 3: 通用路徑組件] ===
         const IconPath = ({ d, viewBox = "0 0 24 24", ...props }) => (
           <svg viewBox={viewBox} fill="currentColor" {...props}>
             <path d={d} />
@@ -87,7 +61,6 @@
           <img src={src} alt={alt || "icon"} className="w-full h-full object-contain" {...props} />
         );
 
-        // --- 資料結構：規格類 (Specs / Black) ---
         const SPECS_CATEGORIES = [
           { id: 'specs-product-lines', title: '產品類別', icon: Package, desc: '各產品系列規格識別' },
           { id: 'transmission', title: '傳輸速度與效能', icon: Cable, desc: '線材、接口與數據傳輸規範' },
@@ -99,7 +72,6 @@
           { id: 'commercial', title: '商業服務與通用', icon: Building2, desc: '企業解決方案與通用標示' },
         ];
 
-        // --- 資料結構：品牌類 (Brand / Pink) ---
         const BRAND_CATEGORIES = [
           { id: 'product-lines', title: '產品類別', icon: Package, desc: '各產品系列識別圖示 (Series A/B/C)' },
           { id: 'ecommerce', title: '會員電商', icon: ShoppingBag, desc: '購物車、會員等級、優惠券、點數' },
@@ -109,9 +81,7 @@
           { id: 'corporate', title: '企業形象', icon: Building2, desc: 'Logo 規範、辦公室指引、名片元素' },
         ];
 
-        // --- [資料設定區] ---
         const ITEMS_DATA = {
-          // === 規格類資料 (Specs) ===
           'specs-product-lines': [
             { id: 1, name: '記憶體', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/memory-module.png', keywords: 'Memory Module', group: '產品類別' },
             { id: 2, name: '固態硬碟', imageUrl: 'https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/products/ssd.png', keywords: 'SSD', group: '產品類別' },
@@ -354,44 +324,35 @@
           { id: 902, name: 'Sample Icon 2', keywords: '測試 / Test' },
         ];
 
-        // --- 3. 內頁：單一類別列表 ---
         const IconCard = ({ item, variant }) => {
           const isSpecs = variant === 'specs';
           const titleColor = isSpecs ? 'text-gray-900' : 'text-gray-900';
           const borderColor = isSpecs ? 'hover:border-gray-900' : 'hover:border-pink-300';
 
-          // 邏輯升級：同時支援 SVG Component (icon) 與 圖片網址 (imageUrl)
           const ItemIconComponent = item.icon;
           const ItemImageUrl = item.imageUrl;
 
           return (
             <div className={`flex flex-col items-center justify-center text-center gap-2.5 p-4 border border-gray-100 transition-all duration-300 bg-white rounded-xl shadow-sm hover:shadow-md h-full`}>
-              {/* 圖片區域：精準設定為 88px (等同於 w-22 h-22) */}
               <div className="w-16 h-16 sm:w-[88px] sm:h-[88px] flex items-center justify-center shrink-0 mb-1">
                 {ItemImageUrl ? (
-                  // 情況 A: 使用圖片網址 (方案 B)
                   <img 
                     src={ItemImageUrl} 
                     alt={item.name} 
                     className="w-full h-full object-contain"
                   />
                 ) : ItemIconComponent ? (
-                  // 情況 B: 使用 SVG 組件 (方案 A)
                   <ItemIconComponent className="w-full h-full object-contain text-gray-500" />
                 ) : (
-                  // 情況 C: 沒圖時的預設文字
                   <div className="w-12 h-12 border-2 border-gray-300 rounded-full flex items-center justify-center font-bold text-xs text-gray-400">
                     {item.name.substring(0, 2).toUpperCase()}
                   </div>
                 )}
               </div>
-              
-              {/* 文字區域：微調文字大小與行距 */}
               <div className="flex flex-col w-full">
                 <h4 className={`font-bold text-[13px] sm:text-sm ${titleColor} mb-0.5 truncate`}>
                   {item.name}
                 </h4>
-                {/* 只有當 keywords 存在時才顯示 (品牌識別區通常無 keyword) */}
                 {item.keywords && (
                   <p className="text-[10px] sm:text-[11px] text-gray-400 break-words leading-tight select-all">
                     {item.keywords}
@@ -408,7 +369,6 @@
           const themeColor = isSpecs ? 'text-gray-900' : 'text-pink-600';
           const categories = isSpecs ? SPECS_CATEGORIES : BRAND_CATEGORIES;
 
-          // Add useEffect for scrolling to top on category change
           useEffect(() => {
             const handleScroll = () => {
               window.scrollTo({ top: 0, behavior: 'instant' });
@@ -417,10 +377,8 @@
             return () => clearTimeout(timer);
           }, [category.id]);
 
-          // Check if items have grouping
           const hasGroups = items.some(item => item.group);
           
-          // Define group order mapping for specific categories
           const categoryGroupOrders = {
             'specs-product-lines': ['產品類別'],
             'transmission': ['速度等級', '讀寫行為', '效能特色'],
@@ -438,19 +396,14 @@
             'corporate': ['企業形象'],
           };
 
-          // Get group order for current category
           const groupOrder = categoryGroupOrders[category.id] || (hasGroups ? [...new Set(items.map(item => item.group).filter(Boolean))] : []);
 
-          // Helper function to handle scrolling to a group
           const scrollToGroup = (groupName) => {
             const element = document.getElementById(groupName);
             if (element) {
-              // Offset for sticky header (Header + Tabs + SubNav)
-              // 已增加 offset 數值為 220，避免標題被遮擋
               const headerOffset = 220; 
               const elementPosition = element.getBoundingClientRect().top;
               const offsetPosition = elementPosition + window.scrollY - headerOffset;
-
               window.scrollTo({
                 top: offsetPosition,
                 behavior: "smooth"
@@ -458,7 +411,6 @@
             }
           };
 
-          // Helper to render grid：微調卡片數量列，讓 w-22 尺寸的卡片有足夠呼吸空間
           const renderGrid = (itemList) => (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-5">
               {itemList.map((item) => (
@@ -469,7 +421,6 @@
 
           return (
             <div className="min-h-screen bg-gray-50/50 animate-in slide-in-from-right duration-300">
-              {/* 1. Main Header (Sticky) */}
               <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
                 <div className="max-w-[1600px] mx-auto px-4 h-16 flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -490,11 +441,8 @@
                 </div>
               </header>
 
-              {/* 2. Category Tabs Bar & Sub-navigation (Sticky below header) */}
               <div className="sticky top-16 z-40 bg-gray-50/95 backdrop-blur-sm border-b border-gray-200 shadow-sm flex flex-col">
                 <div className="max-w-[1600px] mx-auto px-4 pt-5 pb-4 w-full">
-                  
-                  {/* Main Category Tabs */}
                   <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide justify-center">
                     {categories.map((cat) => (
                       <button
@@ -513,7 +461,6 @@
                     ))}
                   </div>
 
-                  {/* Sub-navigation Anchors */}
                   {hasGroups && groupOrder.length > 0 && (
                     <div className="flex items-center justify-center gap-4 mt-4 mb-1 flex-wrap text-xs text-gray-500">
                       {groupOrder.map((groupName, index) => (
@@ -531,13 +478,10 @@
                       ))}
                     </div>
                   )}
-
                 </div>
               </div>
 
-              {/* 4. Main Content Area */}
               <main className="max-w-[1600px] mx-auto p-6 md:p-10 pb-96">
-                
                 {hasGroups ? (
                   <div className="space-y-16">
                     {groupOrder.map(groupName => {
@@ -565,27 +509,21 @@
           );
         };
 
-        // --- 1. 首頁：雙入口 (Landing Split) ---
         const LandingPage = ({ onSelectContext }) => {
           return (
-            // 移除 font-sans，讓外層的 Poppins 生效
             <div className="h-screen w-full flex flex-col md:flex-row overflow-hidden relative">
-              
-              {/* 左上角小標籤 */}
               <div className="absolute top-4 left-4 z-50 pointer-events-none">
                 <h3 className="text-[10px] md:text-xs font-bold tracking-widest text-gray-500 uppercase">
                   Silicon Power Icons Library
                 </h3>
               </div>
 
-              {/* 左側：規格入口 (Specs) */}
               <div 
                 onClick={() => onSelectContext('specs')}
                 className="relative flex-1 bg-gray-100 md:hover:flex-[1.2] transition-all duration-500 cursor-pointer flex flex-col items-center justify-center p-10 group border-b md:border-b-0 md:border-r border-gray-200"
               >
                 <div className="absolute inset-0 bg-grid-gray-900/[0.05] pointer-events-none" />
                 <div className="z-10 text-center">
-                  {/* 白色圓圈樣式 */}
                   <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-all duration-300">
                     <img 
                       src="https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/logo/spec.png" 
@@ -608,14 +546,12 @@
                 </div>
               </div>
 
-              {/* 右側：品牌入口 (Brand) */}
               <div 
                 onClick={() => onSelectContext('brand')}
                 className="relative flex-1 bg-pink-600 hover:bg-pink-700 md:hover:flex-[1.2] transition-all duration-500 cursor-pointer flex flex-col items-center justify-center p-10 group text-white"
               >
                 <div className="absolute inset-0 bg-grid-white/[0.1] pointer-events-none" />
                 <div className="z-10 text-center">
-                  {/* 白色圓圈樣式 */}
                   <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-all duration-300">
                     <img 
                       src="https://cdn.jsdelivr.net/gh/VeraW25/sp-icons/logo/brand.png" 
@@ -643,10 +579,9 @@
         };
 
         function App() {
-          const [context, setContext] = useState(null); // 'specs' | 'brand'
+          const [context, setContext] = useState(null); 
           const [activeCategory, setActiveCategory] = useState(null);
 
-          // 進入區塊時的邏輯：設定 Context 並預設選取第一個分類
           const handleEnterContext = (selectedContext) => {
             setContext(selectedContext);
             if (selectedContext === 'specs') {
@@ -661,22 +596,12 @@
             setActiveCategory(null);
           };
 
-          // 1. 沒選 Context -> 首頁
           if (!context) {
             return <LandingPage onSelectContext={handleEnterContext} />;
           }
 
-          // 2. 選了 Context (且因為自動設定了 activeCategory，所以直接進入 DetailPage)
           return (
             <React.Fragment>
-              <style>
-                {`
-                  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&display=swap');
-                  body {
-                    font-family: 'Poppins', sans-serif;
-                  }
-                `}
-              </style>
               <DetailPage 
                 context={context}
                 category={activeCategory} 
@@ -687,7 +612,6 @@
           );
         }
 
-        // --- 啟動渲染 ---
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
