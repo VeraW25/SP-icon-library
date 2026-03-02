@@ -1,2 +1,2 @@
 # SP-icon-library
-SP Icons Library
+SP Icon Library
